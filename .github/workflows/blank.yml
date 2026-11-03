@@ -1,0 +1,36 @@
+#!/bin/bash
+# ==========================================================
+# GitHub Virtual PC - High FPS & Performance Optimizer (48 lines)
+# ==========================================================
+export DEBIAN_FRONTEND=noninteractive
+
+echo "[1/6] Atualizando sistema e instalando dependências..."
+sudo apt-get update -qq && sudo apt-get install -y -qq \
+    xfce4 xfce4-goodies tightvncserver wget curl git > /dev/null 2>&1
+
+echo "[2/6] Configurando ambiente gráfico e VNC..."
+mkdir -p ~/.vnc
+echo "#!/bin/sh" > ~/.vnc/xstartup
+echo "xrdb $HOME/.Xresources" >> ~/.vnc/xstartup
+echo "startxfce4 &" >> ~/.vnc/xstartup
+chmod +x ~/.vnc/xstartup
+
+echo "[3/6] Aplicando tweaks de Alto FPS e prioridade..."
+echo "export vnc_density=high" >> ~/.bashrc
+echo "export __GL_SYNC_TO_VBLANK=0" >> ~/.bashrc
+xset s off && xset -dpms && xset s noblank
+
+echo "[4/6] Configurando noVNC para acesso web..."
+git clone https://github.com/novnc/noVNC.git ~/noVNC > /dev/null 2>&1
+git clone https://github.com/novnc/websockify ~/noVNC/utils/websockify > /dev/null 2>&1
+
+echo "[5/6] Iniciando servidor VNC otimizado..."
+vncserver :1 -geometry 1280x720 -depth 24 -dpi 96 > /dev/null 2>&1
+
+echo "[6/6] Iniciando ponte web do noVNC..."
+~/noVNC/utils/novnc_proxy --vnc localhost:5901 --listen 6080 &
+
+echo "=========================================================="
+echo "PC Virtual pronto! Acesse via porta 6080 no Codespaces."
+echo "Configurado para máximo desempenho e fluidez."
+echo "=========================================================="
