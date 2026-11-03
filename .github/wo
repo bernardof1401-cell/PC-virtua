@@ -1,0 +1,23 @@
+/bin/bash
+
+echo "=== ATUALIZANDO SISTEMA ==="
+sudo apt update && sudo apt upgrade -y
+
+echo "=== INSTALANDO AMBIENTE GRÁFICO (XFCE) E VNC ==="
+sudo apt install xfce4 xfce4-goodies tightvncserver -y
+
+echo "=== CONFIGURANDO SENHA DO VNC ==="
+mkdir -p ~/.vnc
+echo "123456" | vncpasswd -f > ~/.vnc/passwd
+chmod 600 ~/.vnc/passwd
+
+echo "=== INICIANDO O SERVIDOR VNC ==="
+vncserver :1 -geometry 1280x720 -depth 24
+
+echo "=== INSTALANDO NGROK PARA ACESSO REMOTO ==="
+curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
+echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
+sudo apt update && sudo apt install ngrok -y
+
+echo "=== TUDO PRONTO! ==="
+echo "Execute 'ngrok tcp 5901' para obter o link de acesso ao seu VNC."
